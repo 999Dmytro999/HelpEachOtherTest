@@ -8,6 +8,7 @@
     var isOpen = Model.Status == HelpRequestStatus.Open;
     var canVolunteer = User.Identity?.IsAuthenticated == true && isOpen && !isOwner;
     var canComplete = User.Identity?.IsAuthenticated == true && isOwner && Model.Status == HelpRequestStatus.InProgress;
+    var canEditOrDelete = User.Identity?.IsAuthenticated == true && isOwner && isOpen;
 }
 
 <h2>@Model.Title</h2>
@@ -42,6 +43,12 @@
                 @Html.AntiForgeryToken()
                 <button class="btn btn-success" type="submit">Mark as completed</button>
             </form>
+        }
+
+        @if (canEditOrDelete)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Edit</a>
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Delete</a>
         }
     </div>
 </div>

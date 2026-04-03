@@ -15,6 +15,8 @@ public class HelpRequestsController(
     UserManager<ApplicationUser> userManager,
     HelpRequestService helpRequestService) : Controller
 {
+    private static SelectList GetCategoriesSelectList() => new(HelpCategories.All);
+
     public async Task<IActionResult> Index(HelpRequestStatus? status)
     {
         var query = context.HelpRequests
@@ -46,7 +48,7 @@ public class HelpRequestsController(
     [Authorize]
     public IActionResult Create()
     {
-        ViewBag.Categories = new SelectList(HelpCategories.All);
+        ViewBag.Categories = GetCategoriesSelectList();
         return View(new CreateHelpRequestViewModel());
     }
 
@@ -57,7 +59,7 @@ public class HelpRequestsController(
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Categories = new SelectList(HelpCategories.All);
+            ViewBag.Categories = GetCategoriesSelectList();
             return View(model);
         }
 
@@ -80,6 +82,122 @@ public class HelpRequestsController(
 
         TempData["Success"] = "Help request created successfully.";
         return RedirectToAction(nameof(Details), new { id = request.Id });
+    }
+
+    [Authorize]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var request = await context.HelpRequests.FirstOrDefaultAsync(r => r.Id == id);
+        if (request is null) return NotFound();
+
+        var userId = userManager.GetUserId(User);
+        if (userId is null) return Challenge();
+
+        if (request.OwnerId != userId) return Forbid();
+
+        if (request.Status != HelpRequestStatus.Open)
+        {
+            TempData["Error"] = "Only open requests can be edited.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        var model = new EditHelpRequestViewModel
+        {
+            Id = request.Id,
+            Title = request.Title,
+            Description = request.Description,
+            Category = request.Category,
+            City = request.City
+        };
+
+        ViewBag.Categories = GetCategoriesSelectList();
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, EditHelpRequestViewModel model)
+    {
+        if (id != model.Id) return NotFound();
+
+        var userId = userManager.GetUserId(User);
+        if (userId is null) return Challenge();
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Categories = GetCategoriesSelectList();
+            return View(model);
+        }
+
+        var request = await context.HelpRequests.FirstOrDefaultAsync(r => r.Id == id);
+        if (request is null) return NotFound();
+
+        if (request.OwnerId != userId) return Forbid();
+
+        if (request.Status != HelpRequestStatus.Open)
+        {
+            TempData["Error"] = "Only open requests can be edited.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        request.Title = model.Title.Trim();
+        request.Description = model.Description.Trim();
+        request.Category = model.Category;
+        request.City = model.City.Trim();
+
+        await context.SaveChangesAsync();
+
+        TempData["Success"] = "Help request updated successfully.";
+        return RedirectToAction(nameof(Details), new { id });
+    }
+
+    [Authorize]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var request = await context.HelpRequests
+            .Include(r => r.Owner)
+            .FirstOrDefaultAsync(r => r.Id == id);
+        if (request is null) return NotFound();
+
+        var userId = userManager.GetUserId(User);
+        if (userId is null) return Challenge();
+
+        if (request.OwnerId != userId) return Forbid();
+
+        if (request.Status != HelpRequestStatus.Open)
+        {
+            TempData["Error"] = "Only open requests can be deleted.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        return View(request);
+    }
+
+    [Authorize]
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var request = await context.HelpRequests.FirstOrDefaultAsync(r => r.Id == id);
+        if (request is null) return NotFound();
+
+        var userId = userManager.GetUserId(User);
+        if (userId is null) return Challenge();
+
+        if (request.OwnerId != userId) return Forbid();
+
+        if (request.Status != HelpRequestStatus.Open)
+        {
+            TempData["Error"] = "Only open requests can be deleted.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        context.HelpRequests.Remove(request);
+        await context.SaveChangesAsync();
+
+        TempData["Success"] = "Help request deleted successfully.";
+        return RedirectToAction("MyRequests", "Profile");
     }
 
     [Authorize]

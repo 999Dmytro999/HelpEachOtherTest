@@ -1,0 +1,33 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<h2>My Profile</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-success">
+            <div class="card-body">
+                <h5 class="card-title">Soul Points</h5>
+                <p class="display-6 text-success">@Model.SoulPoints</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <p><strong>Username:</strong> @Model.Username</p>
+                <p><strong>Display Name:</strong> @Model.DisplayName</p>
+                <p><strong>Completed Helps:</strong> @Model.CompletedHelpsCount</p>
+                <p><strong>Created Requests:</strong> @Model.CreatedRequestsCount</p>
+                <p class="mb-0"><strong>Accepted Helps:</strong> @Model.AcceptedHelpsCount</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-2 mb-3">
+    <a class="btn btn-outline-primary" asp-action="MyRequests">My Created Requests</a>
+    <a class="btn btn-outline-primary" asp-action="MyHelping">My Helping Activity</a>
+</div>

@@ -1,0 +1,47 @@
+@model HelpRequest
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Request Details";
+    var userId = UserManager.GetUserId(User);
+    var isOwner = userId == Model.OwnerId;
+    var isOpen = Model.Status == HelpRequestStatus.Open;
+    var canVolunteer = User.Identity?.IsAuthenticated == true && isOpen && !isOwner;
+    var canComplete = User.Identity?.IsAuthenticated == true && isOwner && Model.Status == HelpRequestStatus.InProgress;
+}
+
+<h2>@Model.Title</h2>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <p><strong>Description:</strong><br />@Model.Description</p>
+        <p><strong>Category:</strong> @Model.Category</p>
+        <p><strong>City:</strong> @Model.City</p>
+        <p><strong>Status:</strong> <span class="badge bg-secondary">@Model.Status</span></p>
+        <p><strong>Owner:</strong> @(Model.Owner.DisplayName ?? Model.Owner.UserName)</p>
+        <p><strong>Helper:</strong> @(Model.Helper is null ? "Not assigned" : (Model.Helper.DisplayName ?? Model.Helper.UserName))</p>
+        <p><strong>Created:</strong> @Model.CreatedAt.ToLocalTime().ToString("f")</p>
+        @if (Model.CompletedAt.HasValue)
+        {
+            <p><strong>Completed:</strong> @Model.CompletedAt.Value.ToLocalTime().ToString("f")</p>
+        }
+    </div>
+    <div class="card-footer bg-white d-flex gap-2">
+        <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+
+        @if (canVolunteer)
+        {
+            <form asp-action="Volunteer" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-primary" type="submit">I want to help</button>
+            </form>
+        }
+
+        @if (canComplete)
+        {
+            <form asp-action="Complete" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-success" type="submit">Mark as completed</button>
+            </form>
+        }
+    </div>
+</div>

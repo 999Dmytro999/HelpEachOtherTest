@@ -1,0 +1,25 @@
+@model IEnumerable<HelpRequest>
+@{
+    ViewData["Title"] = "My Helping Activity";
+}
+
+<h2>My Helping Activity</h2>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Title</th><th>Status</th><th>Owner</th><th>Created</th><th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Title</td>
+            <td>@item.Status</td>
+            <td>@(item.Owner?.UserName ?? "-")</td>
+            <td>@item.CreatedAt.ToLocalTime().ToString("g")</td>
+            <td><a asp-controller="HelpRequests" asp-action="Details" asp-route-id="@item.Id">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

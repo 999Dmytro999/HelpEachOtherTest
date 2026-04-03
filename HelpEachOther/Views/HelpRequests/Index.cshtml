@@ -1,0 +1,41 @@
+@model IEnumerable<HelpRequest>
+@{
+    ViewData["Title"] = "Help Requests";
+    var selected = ViewBag.Status as HelpRequestStatus?;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Help Requests</h2>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a class="btn btn-primary" asp-action="Create">Create Request</a>
+    }
+</div>
+
+<div class="mb-3">
+    <a class="btn btn-sm @(selected is null ? "btn-primary" : "btn-outline-primary")" asp-action="Index">All</a>
+    <a class="btn btn-sm @(selected == HelpRequestStatus.Open ? "btn-primary" : "btn-outline-primary")" asp-action="Index" asp-route-status="Open">Open</a>
+    <a class="btn btn-sm @(selected == HelpRequestStatus.InProgress ? "btn-primary" : "btn-outline-primary")" asp-action="Index" asp-route-status="InProgress">In Progress</a>
+    <a class="btn btn-sm @(selected == HelpRequestStatus.Completed ? "btn-primary" : "btn-outline-primary")" asp-action="Index" asp-route-status="Completed">Completed</a>
+</div>
+
+<div class="row g-3">
+@foreach (var item in Model)
+{
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">@item.Title</h5>
+                <p class="card-text">@(item.Description.Length > 120 ? item.Description[..120] + "..." : item.Description)</p>
+                <p class="mb-1"><strong>Category:</strong> @item.Category</p>
+                <p class="mb-1"><strong>City:</strong> @item.City</p>
+                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-secondary">@item.Status</span></p>
+                <p class="text-muted mb-0">Created @item.CreatedAt.ToLocalTime().ToString("g")</p>
+            </div>
+            <div class="card-footer bg-white">
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">View Details</a>
+            </div>
+        </div>
+    </div>
+}
+</div>

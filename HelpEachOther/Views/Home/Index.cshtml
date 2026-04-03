@@ -1,0 +1,29 @@
+@{
+    ViewData["Title"] = "Home";
+}
+<div class="p-5 mb-4 bg-white rounded-3 shadow-sm">
+    <div class="container-fluid py-2">
+        <h1 class="display-6">Welcome to HelpEachOther</h1>
+        <p class="lead">People can ask for help, volunteers can support them, and helpers earn Soul Points.</p>
+        <a asp-controller="HelpRequests" asp-action="Index" class="btn btn-primary">Browse Requests</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Open Requests</h5>
+                <p class="display-6 mb-0">@ViewBag.OpenRequestsCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Completed Helps</h5>
+                <p class="display-6 mb-0">@ViewBag.CompletedCount</p>
+            </div>
+        </div>
+    </div>
+</div>

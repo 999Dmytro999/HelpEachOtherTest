@@ -1,9 +1,30 @@
 @model IEnumerable<HelpRequest>
 @{
     ViewData["Title"] = "My Requests";
+    var selectedStatus = ViewBag.Status?.ToString();
 }
 
 <h2>My Created Requests</h2>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" asp-controller="Profile" asp-action="MyRequests" class="row g-2 align-items-end">
+            <div class="col-sm-4 col-md-3">
+                <label for="status" class="form-label">Status</label>
+                <select id="status" name="status" class="form-select">
+                    <option value="" @(string.IsNullOrEmpty(selectedStatus) ? "selected" : "")>All</option>
+                    <option value="Open" @(selectedStatus == nameof(HelpRequestStatus.Open) ? "selected" : "")>Open</option>
+                    <option value="InProgress" @(selectedStatus == nameof(HelpRequestStatus.InProgress) ? "selected" : "")>InProgress</option>
+                    <option value="Completed" @(selectedStatus == nameof(HelpRequestStatus.Completed) ? "selected" : "")>Completed</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <table class="table table-striped">
     <thead>
     <tr>
@@ -13,9 +34,17 @@
     <tbody>
     @foreach (var item in Model)
     {
+        var badgeClass = item.Status switch
+        {
+            HelpRequestStatus.Open => "bg-primary",
+            HelpRequestStatus.InProgress => "bg-warning text-dark",
+            HelpRequestStatus.Completed => "bg-success",
+            _ => "bg-secondary"
+        };
+
         <tr>
             <td>@item.Title</td>
-            <td>@item.Status</td>
+            <td><span class="badge @badgeClass">@item.Status</span></td>
             <td>@(item.Helper?.UserName ?? "-")</td>
             <td>@item.CreatedAt.ToLocalTime().ToString("g")</td>
             <td>

@@ -43,16 +43,26 @@ public class ProfileController(
         return View(vm);
     }
 
-    public async Task<IActionResult> MyRequests()
+    public async Task<IActionResult> MyRequests(HelpRequestStatus? status)
     {
         var userId = userManager.GetUserId(User);
         if (userId is null) return Challenge();
 
-        var items = await context.HelpRequests
+        var query = context.HelpRequests
             .Include(r => r.Helper)
             .Where(r => r.OwnerId == userId)
+            .AsQueryable();
+
+        if (status.HasValue)
+        {
+            query = query.Where(r => r.Status == status.Value);
+        }
+
+        var items = await query
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync();
+
+        ViewBag.Status = status;
 
         return View(items);
     }

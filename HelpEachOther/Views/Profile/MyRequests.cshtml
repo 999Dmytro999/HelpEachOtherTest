@@ -12,10 +12,41 @@
             <div class="col-sm-4 col-md-3">
                 <label for="status" class="form-label">Status</label>
                 <select id="status" name="status" class="form-select">
-                    <option value="" @(string.IsNullOrEmpty(selectedStatus) ? "selected" : "")>All</option>
-                    <option value="Open" @(selectedStatus == nameof(HelpRequestStatus.Open) ? "selected" : "")>Open</option>
-                    <option value="InProgress" @(selectedStatus == nameof(HelpRequestStatus.InProgress) ? "selected" : "")>InProgress</option>
-                    <option value="Completed" @(selectedStatus == nameof(HelpRequestStatus.Completed) ? "selected" : "")>Completed</option>
+                    @if (string.IsNullOrEmpty(selectedStatus))
+                    {
+                        <option value="" selected>All</option>
+                    }
+                    else
+                    {
+                        <option value="">All</option>
+                    }
+
+                    @if (selectedStatus == nameof(HelpRequestStatus.Open))
+                    {
+                        <option value="Open" selected>Open</option>
+                    }
+                    else
+                    {
+                        <option value="Open">Open</option>
+                    }
+
+                    @if (selectedStatus == nameof(HelpRequestStatus.InProgress))
+                    {
+                        <option value="InProgress" selected>InProgress</option>
+                    }
+                    else
+                    {
+                        <option value="InProgress">InProgress</option>
+                    }
+
+                    @if (selectedStatus == nameof(HelpRequestStatus.Completed))
+                    {
+                        <option value="Completed" selected>Completed</option>
+                    }
+                    else
+                    {
+                        <option value="Completed">Completed</option>
+                    }
                 </select>
             </div>
             <div class="col-auto">

@@ -15,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services
     .AddDefaultIdentity<ApplicationUser>(options =>
     {
+        // Register page reads these values via IOptions<IdentityOptions> and shows them to users.
         options.SignIn.RequireConfirmedAccount = false;
         options.Password.RequireDigit = false;
         options.Password.RequireLowercase = false;

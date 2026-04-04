@@ -93,7 +93,11 @@ public class HelpRequestsController(
         var userId = userManager.GetUserId(User);
         if (userId is null) return Challenge();
 
-        if (request.OwnerId != userId) return Forbid();
+        if (request.OwnerId != userId)
+        {
+            TempData["Error"] = "You are not allowed to modify this request.";
+            return RedirectToAction(nameof(Index));
+        }
 
         if (request.Status != HelpRequestStatus.Open)
         {
@@ -133,7 +137,11 @@ public class HelpRequestsController(
         var request = await context.HelpRequests.FirstOrDefaultAsync(r => r.Id == id);
         if (request is null) return NotFound();
 
-        if (request.OwnerId != userId) return Forbid();
+        if (request.OwnerId != userId)
+        {
+            TempData["Error"] = "You are not allowed to modify this request.";
+            return RedirectToAction(nameof(Index));
+        }
 
         if (request.Status != HelpRequestStatus.Open)
         {
@@ -163,7 +171,11 @@ public class HelpRequestsController(
         var userId = userManager.GetUserId(User);
         if (userId is null) return Challenge();
 
-        if (request.OwnerId != userId) return Forbid();
+        if (request.OwnerId != userId)
+        {
+            TempData["Error"] = "You are not allowed to modify this request.";
+            return RedirectToAction(nameof(Index));
+        }
 
         if (request.Status != HelpRequestStatus.Open)
         {
@@ -185,7 +197,11 @@ public class HelpRequestsController(
         var userId = userManager.GetUserId(User);
         if (userId is null) return Challenge();
 
-        if (request.OwnerId != userId) return Forbid();
+        if (request.OwnerId != userId)
+        {
+            TempData["Error"] = "You are not allowed to modify this request.";
+            return RedirectToAction(nameof(Index));
+        }
 
         if (request.Status != HelpRequestStatus.Open)
         {

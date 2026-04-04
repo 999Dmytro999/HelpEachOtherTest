@@ -1,0 +1,64 @@
+@page
+@model HelpEachOther.Areas.Identity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-5">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" novalidate>
+            <h2>Create a new account</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email"></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                <small id="emailHint" class="form-text text-muted d-none">Use an address you can access, such as name@example.com.</small>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                <small id="passwordHint" class="form-text text-muted d-none">Password must be at least 6 characters long.</small>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.ConfirmPassword"></label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const bindHint = (inputSelector, hintSelector) => {
+                const input = document.querySelector(inputSelector);
+                const hint = document.querySelector(hintSelector);
+
+                if (!input || !hint) {
+                    return;
+                }
+
+                const showHint = () => hint.classList.remove('d-none');
+                const hideHint = () => hint.classList.add('d-none');
+
+                input.addEventListener('focus', showHint);
+                input.addEventListener('blur', hideHint);
+            };
+
+            bindHint('#Input_Email', '#emailHint');
+            bindHint('#Input_Password', '#passwordHint');
+        })();
+    </script>
+}
